@@ -59,7 +59,7 @@ yarn-debug.log
 .zed-meta/
 
 # Directory bin contenente l'eseguibile Rhubarb Lip Sync
-bin/
+bin/rhubarb
 
 # File generati dai test
 output_lipsync.*
