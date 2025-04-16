@@ -1,0 +1,20 @@
+# Dipendenze per la registrazione audio
+pyaudio>=0.2.13
+pydub>=0.25.1
+
+# Dipendenze per il processamento audio
+librosa>=0.10.0
+numpy>=1.24.0
+
+# Dipendenze per Qwen2-Audio
+transformers>=4.34.0
+torch>=2.0.0
+sentencepiece>=0.1.99
+soundfile>=0.12.1
+
+# Dipendenze per le richieste HTTP (ElevenLabs API)
+requests>=2.31.0
+
+# Utilità varie
+tqdm>=4.66.0
+prettytable>=3.7.0

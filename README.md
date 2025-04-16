@@ -174,19 +174,24 @@ python component_test/elevenlabs/test_eleven_labs.py
 #### Test con il riconoscitore Phonetic (per lingue non inglesi)
 
 ```bash
-python component_test/rhubarb/test_rhubarb_with_phonetic.py component_test/elevenlabs/test_output/test_italian_complex.mp3 --output component_test/rhubarb/test_output/output_phon.json
+python component_test/rhubarb/test_rhubarb_with_phonetic.py test_output/test_italian_complex.mp3 --output test_output/output_phon.json
 ```
 
 #### Test con il riconoscitore PocketSphinx (per lingua inglese)
 
 ```bash
-python component_test/rhubarb/test_rhubarb.py component_test/elevenlabs/test_output/test_italian_complex.mp3 --output component_test/rhubarb/test_output/output_pock.json
+python component_test/rhubarb/test_rhubarb.py test_output/test_italian_complex.mp3 --output test_output/output_pock.json
 ```
 
 ### Test di Qwen2-Audio
-
+Per registrare un audio
 ```bash
-python component_test/qwen/test_qwen.py -a input.mp3 -p "Qual è il contenuto di questo audio?" -o component_test/qwen/test_output/risposta.txt
+python component_test/qwen/record_mic.py --output test_output/user_input.mp3
+```
+
+Per sottoporre l'audio registrato a qwen
+```bash
+python component_test/qwen/test_qwen.py -a test_output/user_input.mp3 -p "Qual è il contenuto di questo audio?" -o test_output/qwen_anser.txt
 ```
 
 
