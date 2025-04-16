@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+.venv
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# File di configurazione con informazioni sensibili
+*.pem
+*.key
+*.env
+
+# Directory di output dei test
+**/test_output/
+
+# Zed Editor files
+.zed/
+.zed-settings.json
+.zed-workspace
+.zed-meta/
+
+# Directory bin contenente l'eseguibile Rhubarb Lip Sync
+bin/
+
+# File generati dai test
+output_lipsync.*
+*.json
+*.xml
+*.tsv
+*.mp3
