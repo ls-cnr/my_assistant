@@ -1,0 +1,3 @@
+[submodule "Unity3DAvatar"]
+	path = Unity3DAvatar
+	url = https://github.com/ls-cnr/Unity3DAvatar.git
