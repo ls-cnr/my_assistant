@@ -183,15 +183,25 @@ python component_test/rhubarb/test_rhubarb_with_phonetic.py test_output/test_ita
 python component_test/rhubarb/test_rhubarb.py test_output/test_italian_complex.mp3 --output test_output/output_pock.json
 ```
 
-### Test di Qwen2-Audio
+### Test di Audio-to-Text
 Per registrare un audio
 ```bash
 python component_test/qwen/record_mic.py --output test_output/user_input.mp3
 ```
 
-Per sottoporre l'audio registrato a qwen
+Per sottoporre l'audio registrato a Qwen2-Audio
 ```bash
 python component_test/qwen/test_qwen.py -a test_output/user_input.mp3 -p "Qual è il contenuto di questo audio?" -o test_output/qwen_anser.txt
+```
+
+Per sottoporre l'audio registrato a Qwen2-Audio (versione semplificata)
+```bash
+python component_test/qwen/test_qwen_simple.py -a test_output/user_input.mp3 -p "Qual è il contenuto di questo audio?" -o test_output/qwen_anser.txt
+```
+
+Per sottoporre l'audio registrato a Whisper
+```bash
+python component_test/whisper/test_whisper.py -a test_output/user_input.mp3 -o test_output/trascrizione.txt
 ```
 
 
