@@ -4,21 +4,131 @@ Questo progetto implementa un assistente personale con avatar 3D animato che ris
 
 ## Panoramica dell'Architettura
 
-Il sistema è composto da quattro componenti principali organizzati in una pipeline sequenziale:
+Il sistema utilizza un'architettura client-server dove il backend Python gestisce l'elaborazione dell'audio e del testo, mentre il frontend Unity si occupa della visualizzazione e animazione dell'avatar 3D.
+
+### Pipeline di Elaborazione
+
 
 ```
-Audio input → [Qwen2-Audio] → Testo trascritto → [ElevenLabs] → Audio sintetizzato
-                                    ↓
-                        [Rhubarb Lip Sync] → Dati sincronizzazione labiale
-                                    ↓
-                        [Ready Player Me] → Avatar 3D animato con sincronizzazione labiale
+Audio input → [Qwen2-Audio/Whisper] → Testo trascritto → [LLMController] → Risposta → [ElevenLabs] → Audio sintetizzato
+                                                                                           ↓
+                                                                         [Rhubarb Lip Sync] → Dati sincronizzazione labiale
+                                                                                           ↓
+                                                                         [Ready Player Me] → Avatar 3D animato
 ```
+
+```mermaid
+graph LR
+    subgraph "Pipeline di Elaborazione"
+    A[Audio Input] --> B{Trascrizione}
+    B -->|Qwen2-Audio| C[Testo Trascritto]
+    B -->|Whisper| C
+    C --> D[LLMController]
+    D --> E[Risposta Testuale]
+    E --> F[ElevenLabs]
+    F --> G[Audio Sintetizzato]
+    G --> H[Rhubarb Lip Sync]
+    H --> I[Dati Sincronizzazione Labiale]
+    I --> J[Ready Player Me Avatar 3D Animato]
+    end
+
+    style A fill:#f9d5e5,stroke:#333,stroke-width:2px
+    style B fill:#eeac99,stroke:#333,stroke-width:2px
+    style C fill:#e06377,stroke:#333,stroke-width:2px
+    style D fill:#c83349,stroke:#333,stroke-width:2px
+    style E fill:#5b9aa0,stroke:#333,stroke-width:2px
+    style F fill:#d6e1c7,stroke:#333,stroke-width:2px
+    style G fill:#88d8b0,stroke:#333,stroke-width:2px
+    style H fill:#b6d7a8,stroke:#333,stroke-width:2px
+    style I fill:#ffeead,stroke:#333,stroke-width:2px
+    style J fill:#ffcc5c,stroke:#333,stroke-width:2px
+```
+
+### Backend (Python)
+- Gestisce la registrazione e l'elaborazione dell'input audio
+- Utilizza Qwen2-Audio o Whisper per la trascrizione audio-testo
+- Genera risposte tramite un LLMController (che può utilizzare Qwen2-Audio o altri modelli)
+- Converte il testo in audio con ElevenLabs
+- Genera dati di sincronizzazione labiale con Rhubarb Lip Sync
+- Comunica con il frontend Unity tramite API HTTP o WebSocket
+
+### Frontend (Unity)
+- Espone API (HTTP o WebSocket) per ricevere comandi dal backend
+- Visualizza e anima l'avatar 3D di Ready Player Me
+- Applica la sincronizzazione labiale in tempo reale
+- Gestisce la riproduzione audio sincronizzata con l'animazione
+
+```
+Backend Python                       Unity Frontend
+│                                    │
+├── Input Audio                      ├── WebServer/API Listener
+│   ├── Qwen2-Audio                  │   ├── /avatar/lipsync
+│   └── Whisper                      │   ├── /avatar/animate
+├── LLMController                    │   └── /avatar/playAudio
+│   └── Generazione risposta         │
+├── ElevenLabs                       ├── AvatarController
+│   └── Audio sintetizzato           │   ├── Ready Player Me Avatar
+├── Rhubarb LipSync                  │   ├── AnimationManager
+│   └── Dati sincronizzazione        │   └── LipSyncManager
+└── API Client                       │
+    └── Invio comandi a Unity        │
+```
+
+```mermaid
+flowchart TD
+    subgraph Backend[Backend Python]
+        direction TB
+        AudioInput[Audio Input] --> ASR
+
+        subgraph ASR[Speech Recognition]
+            direction LR
+            Qwen[Qwen2-Audio]
+            Whisper[Whisper]
+        end
+
+        ASR --> LLM[LLMController]
+        LLM --> ElevenLabs[ElevenLabs TTS]
+        ElevenLabs --> Audio[Audio Sintetizzato]
+        Audio --> Rhubarb[Rhubarb Lip Sync]
+        Rhubarb --> LipSyncData[Dati Sincronizzazione]
+
+        APIClient[API Client]
+        Audio --> APIClient
+        LipSyncData --> APIClient
+    end
+
+    subgraph Frontend[Unity Frontend]
+        direction TB
+        APIServer[WebServer/API Listener] --> |Comandi| AvatarController
+
+        subgraph AvatarController[Avatar Controller]
+            direction TB
+            RPMAvatar[Ready Player Me Avatar]
+            AnimManager[Animation Manager]
+            LipSyncManager[LipSync Manager]
+            AudioPlayer[Audio Player]
+        end
+    end
+
+    APIClient -->|HTTP/WebSocket| APIServer
+
+    classDef backendNode fill:#d1e0e0,stroke:#333,stroke-width:1px
+    classDef frontendNode fill:#e6e6fa,stroke:#333,stroke-width:1px
+    classDef apiNode fill:#ffe6cc,stroke:#333,stroke-width:1px
+
+    class AudioInput,ASR,Qwen,Whisper,LLM,ElevenLabs,Audio,Rhubarb,LipSyncData backendNode
+    class APIServer,AvatarController,RPMAvatar,AnimManager,LipSyncManager,AudioPlayer frontendNode
+    class APIClient,APIServer apiNode
+```
+
 
 ## Requisiti di Sistema
 
 - Python 3.8 o superiore
 - FFmpeg
 - Rhubarb Lip Sync
+- Unity 2022.3 o superiore (per lo sviluppo; non necessario per l'utilizzo dell'applicazione finale)
+- Git LFS (per gestire i file binari del progetto Unity)
 - Almeno 16GB di RAM (consigliati)
 - GPU con almeno 8GB di VRAM (consigliata) per prestazioni ottimali
 
@@ -26,11 +136,44 @@ Audio input → [Qwen2-Audio] → Testo trascritto → [ElevenLabs] → Audio si
 
 ### 1. Preparazione dell'Ambiente
 
-#### Creazione della directory del progetto
+#### Clonazione del repository con submodule
 
 ```bash
-mkdir avatar-3d-assistente
+# Clona il repository principale con tutti i submodule
+git clone --recursive https://github.com/your-username/avatar-3d-assistente.git
 cd avatar-3d-assistente
+
+# Se hai già clonato senza --recursive:
+git submodule init
+git submodule update
+```
+
+#### Installazione di Git LFS
+
+```bash
+# Per macOS
+brew install git-lfs
+
+# Per Ubuntu/Debian
+sudo apt install git-lfs
+
+# Per Windows
+# Scarica e installa da https://git-lfs.github.com/
+
+# Inizializzazione in ogni repository che lo utilizza
+git lfs install
+```
+
+#### Configurazione Unity YAML Merger
+
+```bash
+# Per configurazione globale
+git config --global merge.unityyamlmerge.name "Unity YAML Merger"
+git config --global merge.unityyamlmerge.driver "/Applications/Unity/Hub/Editor/[versione Unity]/Unity.app/Contents/Tools/UnityYAMLMerge merge -p %O %B %A %A"
+
+# Sostituisci [versione Unity] con la versione effettiva installata
+# Su Windows, il percorso sarà diverso, tipicamente:
+# "C:/Program Files/Unity/Hub/Editor/[versione Unity]/Editor/Data/Tools/UnityYAMLMerge.exe"
 ```
 
 #### Creazione dell'ambiente virtuale Python
@@ -45,13 +188,14 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-#### Aggiornamento di pip
+#### Aggiornamento di pip e installazione delle dipendenze
 
 ```bash
 pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-### 2. Installazione delle Dipendenze
+### 2. Installazione delle Dipendenze di Sistema
 
 #### Installazione di FFmpeg
 
@@ -80,27 +224,6 @@ sudo apt install ffmpeg
    ```bash
    chmod +x bin/rhubarb
    ```
-
-#### Installazione delle dipendenze Python
-
-Crea un file `requirements.txt` con il seguente contenuto:
-
-```
-python-dotenv>=1.0.0
-requests>=2.31.0
-transformers>=4.35.0
-torch>=2.0.0
-numpy>=1.24.0
-librosa>=0.10.0
-soundfile>=0.12.0
-pyaudio>=0.2.13
-```
-
-Installa le dipendenze:
-
-```bash
-pip install -r requirements.txt
-```
 
 ### 3. Configurazione delle API
 
@@ -204,6 +327,78 @@ Per sottoporre l'audio registrato a Whisper
 python component_test/whisper/test_whisper.py -a test_output/user_input.mp3 -o test_output/trascrizione.txt
 ```
 
+## Gestione del Repository
+
+Il progetto utilizza una struttura con submodule Git per gestire separatamente il codice del backend Python e il progetto Unity. Di seguito le raccomandazioni per gestire correttamente il repository:
+
+### Lavorare con il Submodule Unity
+
+#### Clonazione del repository
+```bash
+# Clona con submodule
+git clone --recursive https://github.com/your-username/avatar-3d-assistente.git
+
+# Se hai clonato senza --recursive
+git submodule init
+git submodule update
+```
+
+#### Aggiornare il Submodule Unity
+```bash
+# Entrare nel submodule
+cd Unity3DAvatar
+
+# Fare modifiche e commit come in un normale repository
+git add .
+git commit -m "Descrizione delle modifiche all'avatar"
+git push
+
+# Tornare al repository principale e aggiornare il riferimento al submodule
+cd ..
+git add Unity3DAvatar
+git commit -m "Aggiornato submodule Unity con nuove animazioni"
+git push
+```
+
+#### Ottenere gli ultimi aggiornamenti
+```bash
+# Nel repository principale
+git pull
+git submodule update --remote
+
+# Oppure per aggiornare e fare merge in un solo comando
+git submodule update --remote --merge
+```
+
+### Lavorare con Git LFS
+
+LFS gestisce automaticamente i file binari del progetto Unity in base alle configurazioni nel file `.gitattributes`. Quando si lavora con file tracciati da LFS:
+
+```bash
+# Visualizzare i file tracciati da LFS
+git lfs ls-files
+
+# Forzare il download dei file LFS dopo un pull
+git lfs pull
+
+# In caso di problemi con file LFS
+git lfs fetch --all
+git lfs pull --include="*" --exclude=""
+```
+
+### Risoluzione di Conflitti nei File Unity
+
+Per i conflitti nei file YAML di Unity, il merger configurato aiuterà automaticamente. In caso di conflitti complessi:
+
+1. Usa lo Unity Scene Merger configurato:
+   ```bash
+   git checkout --theirs path/to/conflicted/file.unity
+   git add path/to/conflicted/file.unity
+   ```
+
+2. In alternativa, risolvi manualmente aprendo il progetto in Unity e ricostruendo le modifiche conflittuali.
+
+3. Per conflitti irrisolvibili, considera di utilizzare Prefab nidificati in Unity per modularizzare il lavoro e ridurre i conflitti.
 
 ## Risoluzione dei Problemi
 
@@ -221,3 +416,12 @@ python component_test/whisper/test_whisper.py -a test_output/user_input.mp3 -o t
 - Assicurati di avere abbastanza RAM e spazio GPU per il modello
 - Verifica che il file audio sia in un formato supportato
 - Per problemi di memoria, prova a usare versioni più piccole del modello
+
+### Problemi con Unity e Git
+- Assicurati che Git LFS sia installato e inizializzato
+- Verifica che i file binari siano correttamente tracciati da LFS
+- Per problemi con il submodule, prova a reinizializzarlo:
+  ```bash
+  git submodule deinit -f Unity3DAvatar
+  git submodule update --init Unity3DAvatar
+  ```
