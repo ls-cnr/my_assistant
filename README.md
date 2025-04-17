@@ -17,32 +17,6 @@ Audio input → [Qwen2-Audio/Whisper] → Testo trascritto → [LLMController] �
                                                                          [Ready Player Me] → Avatar 3D animato
 ```
 
-```mermaid
-graph LR
-    subgraph "Pipeline di Elaborazione"
-    A[Audio Input] --> B{Trascrizione}
-    B -->|Qwen2-Audio| C[Testo Trascritto]
-    B -->|Whisper| C
-    C --> D[LLMController]
-    D --> E[Risposta Testuale]
-    E --> F[ElevenLabs]
-    F --> G[Audio Sintetizzato]
-    G --> H[Rhubarb Lip Sync]
-    H --> I[Dati Sincronizzazione Labiale]
-    I --> J[Ready Player Me Avatar 3D Animato]
-    end
-
-    style A fill:#f9d5e5,stroke:#333,stroke-width:2px
-    style B fill:#eeac99,stroke:#333,stroke-width:2px
-    style C fill:#e06377,stroke:#333,stroke-width:2px
-    style D fill:#c83349,stroke:#333,stroke-width:2px
-    style E fill:#5b9aa0,stroke:#333,stroke-width:2px
-    style F fill:#d6e1c7,stroke:#333,stroke-width:2px
-    style G fill:#88d8b0,stroke:#333,stroke-width:2px
-    style H fill:#b6d7a8,stroke:#333,stroke-width:2px
-    style I fill:#ffeead,stroke:#333,stroke-width:2px
-    style J fill:#ffcc5c,stroke:#333,stroke-width:2px
-```
 
 ### Backend (Python)
 - Gestisce la registrazione e l'elaborazione dell'input audio
