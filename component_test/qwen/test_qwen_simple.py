@@ -65,6 +65,7 @@ def main():
             {'text': args.prompt},
         ])
 
+
         # Esegui la chat senza history (prima interazione)
         logger.info("Generazione della risposta...")
         start_time = time.time()
