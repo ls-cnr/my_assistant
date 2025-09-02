@@ -1,0 +1,5 @@
+# Template di configurazione chiavi API per i test
+# Copia questo file in keyconfig.py e inserisci la tua chiave API
+
+# Credenziali ElevenLabs
+ELEVEN_LABS_API_KEY = "your_api_key_here"

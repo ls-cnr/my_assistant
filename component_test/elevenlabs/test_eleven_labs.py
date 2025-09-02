@@ -5,12 +5,15 @@ import base64
 
 # Importa la classe creata sopra
 from eleven_labs_tts import ElevenLabsTTS
+from keyconfig import ELEVEN_LABS_API_KEY
+
 
 def test_eleven_labs():
     """Script di test per ElevenLabs TTS in italiano"""
 
     # Configurazione
-    api_key = "sk_e4892f6b7081dad34cb0efc483e419d2f530cd10c634b40e" #os.environ.get("ELEVENLABS_API_KEY")  # Assicurati di impostare questa variabile d'ambiente
+    api_key = ELEVEN_LABS_API_KEY
+
     output_dir = Path("./test_output")
     output_dir.mkdir(exist_ok=True)
 

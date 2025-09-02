@@ -97,7 +97,7 @@ def get_voice_list(api_key):
 
 if __name__ == "__main__":
     # Sostituisci con la tua API key
-    api_key = "sk_e4892f6b7081dad34cb0efc483e419d2f530cd10c634b40e"
+    api_key = ELEVEN_LABS_API_KEY
 
     # Per sicurezza, puoi caricare l'API key da un file o variabile d'ambiente
     # import os
