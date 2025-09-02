@@ -48,6 +48,7 @@ yarn-debug.log
 *.pem
 *.key
 *.env
+**/keyconfig.py
 
 # Directory di output dei test
 **/test_output/
